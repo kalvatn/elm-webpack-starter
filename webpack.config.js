@@ -8,10 +8,8 @@ var CopyWebpackPlugin = require( 'copy-webpack-plugin' );
 
 console.log( 'WEBPACK GO!');
 
-// detemine build env
 var TARGET_ENV = process.env.npm_lifecycle_event === 'build' ? 'production' : 'development';
 
-// common webpack config
 var commonConfig = {
 
   output: {
@@ -46,7 +44,6 @@ var commonConfig = {
 
 }
 
-// additional webpack settings for local env (when invoked by 'npm start')
 if ( TARGET_ENV === 'development' ) {
   console.log( 'Serving locally...');
 
@@ -84,7 +81,6 @@ if ( TARGET_ENV === 'development' ) {
   });
 }
 
-// additional webpack settings for prod env (when invoked via 'npm run build')
 if ( TARGET_ENV === 'production' ) {
   console.log( 'Building for prod...');
 
@@ -123,10 +119,8 @@ if ( TARGET_ENV === 'production' ) {
 
       new webpack.optimize.OccurenceOrderPlugin(),
 
-      // extract CSS into a separate file
       new ExtractTextPlugin( './[hash].css', { allChunks: true } ),
 
-      // minify & mangle JS/CSS
       new webpack.optimize.UglifyJsPlugin({
           minimize:   true,
           compressor: { warnings: false }
