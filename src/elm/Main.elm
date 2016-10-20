@@ -1,49 +1,65 @@
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.App as Html
+import Html.App as App
 import Html.Events exposing ( onClick )
 
--- component import example
 import Components.Hello exposing ( hello )
 
 
--- APP
 main : Program Never
 main =
-  Html.beginnerProgram { model = model, view = view, update = update }
+  App.program
+    { init = init
+    , view = view
+    , update = update
+    , subscriptions = subscriptions
+    }
 
 
--- MODEL
-type alias Model = Int
 
-model : number
-model = 0
+type alias Model =
+  {
+    counter : Int
+  }
+
+initialModel : Model
+initialModel =
+  {
+    counter = 0
+  }
 
 
--- UPDATE
-type Msg = NoOp | Increment
+init : (Model, Cmd Msg)
+init =
+  (initialModel, Cmd.none)
 
-update : Msg -> Model -> Model
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Sub.none
+
+
+type Msg
+  = NoOp
+  | Increment
+
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    NoOp -> model
-    Increment -> model + 1
+    NoOp -> (model, Cmd.none)
+    Increment -> ({model | counter = model.counter + 1}, Cmd.none)
 
 
--- VIEW
--- Html is defined as: elem [ attribs ][ children ]
--- CSS can be applied via class names or inline style attrib
 view : Model -> Html Msg
 view model =
-  div [ class "container", style [("margin-top", "30px"), ( "text-align", "center" )] ][    -- inline CSS (literal)
+  div [ class "container-fluid", style [("margin-top", "30px"), ( "text-align", "center" )] ][
     div [ class "row" ][
       div [ class "col-xs-12" ][
         div [ class "jumbotron" ][
-          img [ src "static/img/elm.jpg", style styles.img ] []                                    -- inline CSS (via var)
-          , hello model                                                                     -- ext 'hello' component (takes 'model' as arg)
+          img [ src "static/img/elm.jpg", style styles.img ] []
+          , hello model.counter
           , p [] [ text ( "Elm Webpack Starter" ) ]
-          , button [ class "btn btn-primary btn-lg", onClick Increment ] [                  -- click handler
-            span[ class "glyphicon glyphicon-star" ][]                                      -- glyphicon
+          , button [ class "btn btn-primary btn-lg", onClick Increment ] [
+            span[ class "glyphicon glyphicon-star" ][]
             , span[][ text "FTW!" ]
           ]
         ]
@@ -52,7 +68,6 @@ view model =
   ]
 
 
--- CSS STYLES
 styles : { img : List ( String, String ) }
 styles =
   {
