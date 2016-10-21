@@ -2,3 +2,28 @@ $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
 @import '~bootstrap-sass/assets/stylesheets/bootstrap/_mixins.scss';
 @import '~bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
+$footer_height : 60px;
+
+html {
+  position:relative;
+  min-height: 100%;
+}
+
+body {
+  padding-top: 80px;
+  padding-bottom: 20px;
+  margin-bottom: $footer_height;
+}
+
+.footer-sticky-bottom {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: $footer_height;
+  background-color: #f5f5f5;
+
+  p {
+    margin-top: $footer_height / 3;
+  }
+}
+

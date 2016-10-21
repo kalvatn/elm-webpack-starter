@@ -1,19 +1,17 @@
-var path              = require( 'path' );
-var webpack           = require( 'webpack' );
-var merge             = require( 'webpack-merge' );
-var HtmlWebpackPlugin = require( 'html-webpack-plugin' );
-var autoprefixer      = require( 'autoprefixer' );
-var ExtractTextPlugin = require( 'extract-text-webpack-plugin' );
-var CopyWebpackPlugin = require( 'copy-webpack-plugin' );
-
-console.log( 'WEBPACK GO!');
+var path              = require('path');
+var webpack           = require('webpack');
+var merge             = require('webpack-merge');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
+var autoprefixer      = require('autoprefixer');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 var TARGET_ENV = process.env.npm_lifecycle_event === 'build' ? 'production' : 'development';
 
 var commonConfig = {
 
   output: {
-    path:       path.resolve( __dirname, 'dist/' ),
+    path: path.resolve(__dirname, 'dist/'),
     filename: '[hash].js',
   },
 
@@ -35,23 +33,23 @@ var commonConfig = {
   plugins: [
     new HtmlWebpackPlugin({
       template: 'src/static/index.html',
-      inject:   'body',
+      inject: 'body',
       filename: 'index.html'
     })
   ],
 
-  postcss: [ autoprefixer( { browsers: ['last 2 versions'] } ) ],
+  postcss: [ autoprefixer({ browsers: ['last 2 versions'] }) ],
 
 }
 
-if ( TARGET_ENV === 'development' ) {
-  console.log( 'Serving locally...');
+if (TARGET_ENV === 'development') {
+  console.log('Serving locally...');
 
-  module.exports = merge( commonConfig, {
+  module.exports = merge(commonConfig, {
 
     entry: [
       'webpack-dev-server/client?http://localhost:8080',
-      path.join( __dirname, 'src/static/index.js' )
+      path.join(__dirname, 'src/static/index.js')
     ],
 
     devServer: {
@@ -64,7 +62,7 @@ if ( TARGET_ENV === 'development' ) {
         {
           test:    /\.elm$/,
           exclude: [/elm-stuff/, /node_modules/],
-          loader:  'elm-hot!elm-webpack?verbose=true&warn=true'
+          loader: 'elm-hot!elm-webpack?verbose=true&warn=true'
         },
         {
           test: /\.(css|scss)$/,
@@ -81,23 +79,23 @@ if ( TARGET_ENV === 'development' ) {
   });
 }
 
-if ( TARGET_ENV === 'production' ) {
-  console.log( 'Building for prod...');
+if (TARGET_ENV === 'production') {
+  console.log('Building for prod...');
 
-  module.exports = merge( commonConfig, {
+  module.exports = merge(commonConfig, {
 
-    entry: path.join( __dirname, 'src/static/index.js' ),
+    entry: path.join(__dirname, 'src/static/index.js'),
 
     module: {
       loaders: [
         {
           test:    /\.elm$/,
           exclude: [/elm-stuff/, /node_modules/],
-          loader:  'elm-webpack'
+          loader: 'elm-webpack'
         },
         {
           test: /\.(css|scss)$/,
-          loader: ExtractTextPlugin.extract( 'style-loader', [
+          loader: ExtractTextPlugin.extract('style-loader', [
             'css-loader',
             'postcss-loader',
             'sass-loader'
@@ -110,7 +108,7 @@ if ( TARGET_ENV === 'production' ) {
       new CopyWebpackPlugin([
         {
           from: 'src/static/img/',
-          to:   'static/img/'
+          to: 'static/img/'
         },
         {
           from: 'src/favicon.ico'
@@ -119,7 +117,7 @@ if ( TARGET_ENV === 'production' ) {
 
       new webpack.optimize.OccurenceOrderPlugin(),
 
-      new ExtractTextPlugin( './[hash].css', { allChunks: true } ),
+      new ExtractTextPlugin('./[hash].css', { allChunks: true }),
 
       new webpack.optimize.UglifyJsPlugin({
           minimize:   true,
