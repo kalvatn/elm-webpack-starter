@@ -1,8 +1,8 @@
 'use strict';
 
-require( './styles/main.scss' );
-var $ = jQuery = require( '../../node_modules/jquery/dist/jquery.js' );
-require( '../../node_modules/bootstrap-sass/assets/javascripts/bootstrap.js' );
+require('./styles/main.scss');
+global.$ = global.jQuery = require('jquery');
+require('bootstrap-sass');
 
 var Elm = require( '../elm/Main' );
-Elm.Main.embed( document.getElementById( 'main' ) );
+Elm.Main.embed(document.getElementById('main'));
