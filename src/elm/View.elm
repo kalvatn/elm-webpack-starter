@@ -99,7 +99,7 @@ renderMainContent model =
   div [ class "container-fluid" ] [
     div [ class "jumbotron" ] [
       h1 [ class "text-center" ] [ text "Jumbotron" ],
-      p [ ] [ text LoremIpsum.text ]
+      LoremIpsum.paragraphs 1
     ],
     div [ class "container-fluid" ] (List.repeat 3 renderRow)
   ]
@@ -113,7 +113,7 @@ renderColumn : Html Msg
 renderColumn =
   div [ class "col-xs-12 col-md-6 col-lg-4" ] [
     h1 [ class "text-center" ] [ text "Column" ],
-    p [] [ text LoremIpsum.text ]
+    LoremIpsum.paragraphs 3
   ]
 
 
