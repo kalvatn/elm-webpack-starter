@@ -24,7 +24,7 @@ var commonConfig = {
     noParse: /\.elm$/,
     loaders: [
       {
-        test: /\.(eot|ttf|woff|woff2|svg)$/,
+        test: /\.(jpe?g|gif|png|eot|ttf|woff|woff2|svg)$/,
         loader: 'file-loader'
       }
     ]
