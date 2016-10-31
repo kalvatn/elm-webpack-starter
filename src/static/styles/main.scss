@@ -1,33 +1,61 @@
 $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
-@import '~bootstrap-sass/assets/stylesheets/bootstrap/_mixins.scss';
-@import '~bootstrap-sass/assets/stylesheets/_bootstrap.scss';
+$fa-font-path: "~font-awesome/fonts";
 
-$footer_height : 60px;
+@import '~bootswatch/slate/variables';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap';
+@import '~bootswatch/slate/bootswatch';
 
-html {
-  position:relative;
+@import "~font-awesome/scss/font-awesome";
+
+
+$body-vertical-padding : 20px;
+$footer-height : 200px;
+$footer-horizontal-padding : 75px;
+$footer-vertical-padding: $footer-height / 3;
+
+@function headings($from:1, $to:6) {
+  @if $from == $to {
+    @return 'h#{$from}';
+  } @else {
+    @return 'h#{$from},' + headings($from+1, $to);
+  }
+}
+
+html, body {
   min-height: 100%;
+  height: 100%;
 }
 
 body {
-  background-image: url("../img/elm.jpg");
-  background-repeat:no-repeat;
-  background-attachment: fixed;
-  background-size: cover;
-  padding-top: 80px;
-  padding-bottom: 20px;
-  margin-bottom: $footer_height;
+  padding-top: $navbar-height + $body-vertical-padding;
 }
 
-.footer-sticky-bottom {
-  position: absolute;
-  bottom: 0;
+
+#site-footer {
+  margin-top: 200px;
+  min-height: $footer-height;
+  height: $footer-height;
   width: 100%;
-  height: $footer_height;
-  background-color: #f5f5f5;
 
-  p {
-    margin-top: $footer_height / 3;
+  background-color: $navbar-default-bg;
+  border-top: 1px solid $navbar-default-border;
+  padding-top: $footer-vertical-padding;
+
+  #footer-content {
+    padding: 10px;
+    text-align: center;
   }
+  #footer-social li {
+    padding: 10px;
+  }
+  & a {
+    color: darken($text-color, 30%);
+    text-decoration:none;
+    &:hover {
+      color: lighten($text-color, 30%);
+    }
+  }
+
 }
+
 

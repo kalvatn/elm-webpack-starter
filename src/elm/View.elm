@@ -11,6 +11,9 @@ type ListItem
   = Divider
   | Header String
   | Link String String
+  | IconLink String String
+  | ExternalLink String String
+  | ExternalIconLink String String
   | Text String
 
 rootView : Router View -> Model -> Html Msg
@@ -31,6 +34,12 @@ renderListItem item =
       li [ class "dropdown-header" ] [ text name ]
     Link link name ->
       li [] [ a [ href link ] [ text name ] ]
+    IconLink link iconClass ->
+      li [] [ a [ href link ] [ i [ class iconClass, attribute "aria-hidden" "true" ] [ ] ] ]
+    ExternalLink link name ->
+      li [] [ a [ target "_blank", href link ] [ text name ] ]
+    ExternalIconLink link iconClass ->
+      li [] [ a [ target "_blank", href link ] [ i [ class iconClass, attribute "aria-hidden" "true" ] [ ] ] ]
     Text content ->
       li [] [ text content ]
 
@@ -47,7 +56,7 @@ renderDropdownList title items =
 
 renderNavigation : Model -> Html Msg
 renderNavigation model =
-  nav [ class "navbar navbar-default navbar-fixed-top" ] [
+  nav [ id "site-navigation", class "navbar navbar-default navbar-fixed-top" ] [
     div [ class "container-fluid" ] [
       div [ class "navbar-header" ] [
         button [
@@ -119,6 +128,20 @@ renderColumn =
 
 renderFooter : Model -> Html Msg
 renderFooter model =
-  footer [ class "footer-sticky-bottom" ] [
-    p [ class "text-muted text-center" ] [ text "footer p" ]
+  footer [ id "site-footer" ] [
+    div [ class "container" ] [
+      div [ class "row" ] [
+        div [ id "footer-content", class "col-xs-12 col-md-12 col-lg-12" ] [
+            ul [ id "footer-social", class "list-inline" ] [
+              renderListItem(ExternalIconLink "mailto:mail.lol@lol.com" "fa fa-envelope-o fa-2x"),
+              renderListItem(ExternalIconLink "https://www.google.no/maps/place/Nidaros+Cathedral/@63.4323752,10.3936631,13.75z/data=!4m5!3m4!1s0x0:0xb965bfe4f7eb71fd!8m2!3d63.4269058!4d10.3969288?hl=en" "fa fa-map-marker fa-2x"),
+              renderListItem(ExternalIconLink "https://www.facebook.com" "fa fa-facebook fa-2x"),
+              renderListItem(ExternalIconLink "https://twitter.com" "fa fa-twitter fa-2x"),
+              renderListItem(ExternalIconLink "https://plus.google.com" "fa fa-google-plus fa-2x"),
+              renderListItem(ExternalIconLink "https://www.linkedin.com" "fa fa-linkedin fa-2x")
+            ]
+          ]
+      ]
+    ]
   ]
+
