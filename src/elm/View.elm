@@ -18,7 +18,7 @@ type ListItem
 
 rootView : Router View -> Model -> Html Msg
 rootView router model =
-  div [] [
+  div [ class "parallax background-metal"] [
     renderNavigation model,
     renderMainContent model,
     renderFooter model
@@ -105,9 +105,10 @@ renderNavigation model =
 
 renderMainContent : Model -> Html Msg
 renderMainContent model =
-  div [ class "container-fluid" ] [
+  div [ id "site-content", class "container-fluid" ] [
     div [ class "jumbotron" ] [
       h1 [ class "text-center" ] [ text "Jumbotron" ],
+      img [ src "static/img/metal.jpg", width 100, height 100 ] [],
       LoremIpsum.paragraphs 1
     ],
     div [ class "container-fluid" ] (List.repeat 3 renderRow)

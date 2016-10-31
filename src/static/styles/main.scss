@@ -27,7 +27,23 @@ html, body {
 }
 
 body {
-  padding-top: $navbar-height + $body-vertical-padding;
+  padding-top: $navbar-height;
+}
+
+.parallax {
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.background-metal {
+  background-image: url("../img/metal.jpg");
+}
+
+#site-content {
+  padding-top: 20px;
+  height: 100%;
 }
 
 
