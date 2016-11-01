@@ -6,8 +6,8 @@ var walk = require('walk');
 var path = require('path');
 var fs = require('fs');
 
-var root = path.resolve(__dirname, '../static/markdown');
-
+var pageRootRelative = 'static/md'
+var pageRootAbsolute = path.join(__dirname, "../", pageRootRelative);
 
 function isMarkdownFile(filename) {
   return path.extname(filename) === ".md";
@@ -15,10 +15,10 @@ function isMarkdownFile(filename) {
 
 router.get('/', function (req, res) {
   var markdownFiles = [];
-  var walker = walk.walk('static/markdown', { followLinks: false });
+  var walker = walk.walk(pageRootRelative, { followLinks: false });
   walker.on('file', function(root, stat, next) {
     if (isMarkdownFile(stat.name)) {
-      markdownFiles.push(root.substring(root.indexOf('/') +1) + '/' + stat.name);
+      markdownFiles.push(root.replace(pageRootRelative, '') + "/" + stat.name);
     } else {
       console.warn('not a valid markdown file : ' + stat.name);
     }
@@ -31,14 +31,25 @@ router.get('/', function (req, res) {
 
 });
 
-router.get('/', function(req, res, next) {
-  var links = [];
-  fs.readdir(root, function(err, files) {
-    files.forEach(function(file) {
-      res.write(file);
-      console.log(file);
-    });
+router.post('/save', function(req, res) {
+  var filename = req.body.filename;
+  var content = req.body.content;
+  console.log(filename);
+  console.log(content);
+  console.log(pageRootAbsolute);
+  if (!filename.startsWith(pageRootAbsolute)) {
+    res.status(500).send("invalid file path");
+    console.log(filename + " is not in markdown root path");
+  }
+  fs.writeFile(filename, content, function (err) {
+    if(err) {
+      res.status(500).send(err);
+      console.err(err);
+    } else {
+      console.log("saved : " + req.body.filename);
+    }
   });
 });
+
 
 module.exports = router;

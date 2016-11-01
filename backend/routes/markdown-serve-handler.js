@@ -18,7 +18,7 @@ exports.handler = function(req, res, next) {
     }
 
     // we don't want to pass _file down to view
-    delete result._file;
+    // delete result._file;
 
     res.render('markdown/edit', { markdownFile: result });
   });

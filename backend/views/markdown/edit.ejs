@@ -6,6 +6,10 @@
     <link rel="stylesheet" type="text/css" href="/ss/ghostdown.css" media="all">
   </head>
   <body>
+    <div id="title">
+      <h1>Title : <%- markdownFile.name %></h1>
+      <button onClick="save()">Save</button>
+    </div>
     <div class="features">
       <section class="editor">
         <div class="outer">
@@ -35,6 +39,22 @@
 
     <script src="/js/jquery.js"></script>
     <script src="/js/ghostdown.js"></script>
+    <script type="text/javascript">
+
+      function save() {
+        var markdownSource = CodeMirror.fromTextArea(document.getElementById('entry-markdown')).getValue();
+        $.ajax({
+          type : 'POST',
+          url : '/markdown/save',
+          data : { filename : "<%= markdownFile._file %>", content : markdownSource }
+        });
+
+      }
+      $(document).ready(function () {
+        console.log("<%- markdownFile._file %>");
+      });
+
+    </script>
   </body>
 </html>
 
