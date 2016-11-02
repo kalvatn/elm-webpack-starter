@@ -2,59 +2,74 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>Ghost Down Editor</title>
-    <link rel="stylesheet" type="text/css" href="/ss/ghostdown.css" media="all">
+    <title>Markdown Editor</title>
+
+    <link rel="stylesheet" href="/modules/bootstrap/dist/css/bootstrap.min.css" type="text/css" media="all" charset="utf-8">
+    <link rel="stylesheet" href="/modules/highlightjs/styles/github.css" type="text/css" media="all" charset="utf-8">
+    <link rel="stylesheet" href="/modules/highlightjs/styles/github-gist.css" type="text/css" media="all" charset="utf-8">
+    <link rel="stylesheet" href="/modules/codemirror/lib/codemirror.css" type="text/css" media="all" charset="utf-8">
+
+    <link id="codemirror-theme" rel="stylesheet" href="/modules/codemirror/lib/codemirror.css" type="text/css" media="all" charset="utf-8">
   </head>
   <body>
-    <div id="title">
-      <h1>Title : <%- markdownFile.name %></h1>
-      <button onClick="save()">Save</button>
-    </div>
-    <div class="features">
-      <section class="editor">
-        <div class="outer">
-          <div class="editorwrap">
-            <section class="entry-markdown">
-              <header class="floatingheader">
-                &nbsp;&nbsp; Markdown
-              </header>
-              <section class="entry-markdown-content">
-                <textarea id="entry-markdown">
-                  <%- markdownFile.rawContent %>
-                </textarea>
-              </section>
-            </section>
-            <section class="entry-preview active">
-              <header class="floatingheader">
-                &nbsp;&nbsp; Preview <span class="entry-word-count">0 words</span>
-              </header>
-              <section class="entry-preview-content">
-                <div class="rendered-markdown"></div>
-              </section>
-            </section>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xs-12">
+
+            <button id="save-button">Save</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12 col-md-6 col-lg-6">
+            <div id="editor-container" style="height:800px">
+              <div id="editor-options">
+                <form class="form-inline">
+                  <div class="form-group">
+                    <label for="select-keymap">keymap</label>
+                    <select id="select-keymap" class="form-control" name="option-keymap">
+                      <option value="default">default</option>
+                      <option value="emacs">emacs</option>
+                      <option value="sublime">sublime</option>
+                      <option value="vim" class="active" selected="selected">vim</option>
+                    </select>
+
+                    <label for="select-theme">theme</label>
+                    <select id="select-theme" class="form-control" name="option-theme">
+                      <option value="default" class="active" selected="selected">default</option>
+                      <% themes.forEach(function(file) { %>
+                      <option value="<%= file %>"><%= file %></option>
+                      <% }); %>
+                    </select>
+
+                  </div>
+                </form>
+              </div>
+              <hr />
+              <textarea id="editor" rows="20" cols="120"></textarea>
+            </div>
+        </div>
+        <div class="col-xs-12 col-md-6 col-lg-6">
+          <div id="preview-container" style="height:800px">
+            <h1 class="text-center">preview</h1>
+            <hr />
+            <div id="preview"></div>
           </div>
         </div>
-      </section>
+      </div>
     </div>
 
-    <script src="/js/jquery.js"></script>
-    <script src="/js/ghostdown.js"></script>
-    <script type="text/javascript">
 
-      function save() {
-        var markdownSource = CodeMirror.fromTextArea(document.getElementById('entry-markdown')).getValue();
-        $.ajax({
-          type : 'POST',
-          url : '/markdown/save',
-          data : { filename : "<%= markdownFile._file %>", content : markdownSource }
-        });
+    <script src="/modules/jquery/dist/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/modules/codemirror/lib/codemirror.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/modules/codemirror/mode/markdown/markdown.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/modules/highlightjs/highlight.pack.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/modules/codemirror/keymap/vim.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/modules/codemirror/keymap/emacs.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/modules/codemirror/keymap/sublime.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/modules/marked/marked.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/js/editor.js" type="text/javascript" charset="utf-8"></script>
 
-      }
-      $(document).ready(function () {
-        console.log("<%- markdownFile._file %>");
-      });
-
-    </script>
   </body>
 </html>
 
