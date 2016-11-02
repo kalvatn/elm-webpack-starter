@@ -14,7 +14,7 @@
     "debug": "~2.2.0",
     "ejs": "^2.5.2",
     "express": "~4.14.0",
-    "highlightjs": "^8.7.0",
+    "highlight.js": "^9.8.0",
     "jquery": "^3.1.1",
     "marked": "^0.3.6",
     "morgan": "~1.7.0",

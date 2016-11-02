@@ -5,20 +5,33 @@ var codemirrorRoot = '/modules/codemirror'
 
 var scriptCache = [];
 
+var markedWorker;
+
+
 function setupMarked() {
-  marked.setOptions({
-    renderer: new marked.Renderer(),
-    gfm: true,
-    tables: true,
-    breaks: false,
-    pedantic: true,
-    sanitize: true,
-    smartLists: true,
-    smartypants: false,
-    highlight: function(code) {
-      return hljs.highlightAuto(code).value;
-    }
-  });
+
+  if (typeof(Worker) !== "undefined") {
+    console.log('workers supported, creating marked_worker.js');
+    markedWorker = new Worker('/js/marked_worker.js');
+    markedWorker.onmessage = function(e) {
+      preview.innerHTML = e.data;
+    };
+  } else {
+    marked.setOptions({
+      renderer: new marked.Renderer(),
+      gfm: true,
+      tables: true,
+      breaks: false,
+      pedantic: false,
+      sanitize: false,
+      smartLists: true,
+      smartypants: false,
+      highlight: function(code) {
+        return hljs.highlightAuto(code).value;
+      }
+    });
+  }
+
 }
 
 function setupCodeMirror() {
@@ -37,6 +50,7 @@ function setupCodeMirror() {
 
   CodeMirror.modeURL = codemirrorRoot + '/mode/%N/%N.js';
 
+  var preview = document.getElementById('preview');
   var delay;
   editor.on('change', function() {
     clearTimeout(delay);
@@ -45,11 +59,19 @@ function setupCodeMirror() {
 
 }
 
+
 function updatePreview() {
-  var preview = $('#preview');
+
+  var preview = document.getElementById('preview');
   var source = editor.getValue();
-  var html = marked(source);
-  preview.html(html);
+  if (markedWorker) {
+    markedWorker.postMessage(source);
+  } else {
+    marked(source, function(err, content) {
+      if (err) throw err;
+      preview.innerHTML = content;
+    });
+  }
 }
 
 function codeMirrorKeymapChange() {
@@ -148,6 +170,7 @@ $(document).ready(function () {
   // }
   // syncScrollDivs.on('scroll', sync);
 });
+
 
 
 function scrollSync(elements) {

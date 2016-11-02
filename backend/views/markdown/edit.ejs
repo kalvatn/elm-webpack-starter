@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <title>Markdown Editor</title>
 
-    <link rel="stylesheet" href="/modules/bootstrap/dist/css/bootstrap.min.css" type="text/css" media="all" charset="utf-8">
-    <link rel="stylesheet" href="/modules/highlightjs/styles/github.css" type="text/css" media="all" charset="utf-8">
-    <link rel="stylesheet" href="/modules/highlightjs/styles/github-gist.css" type="text/css" media="all" charset="utf-8">
+    <link rel="stylesheet" href="/modules/bootstrap/css/bootstrap.min.css" type="text/css" media="all" charset="utf-8">
+    <link rel="stylesheet" href="/modules/highlight/styles/github.css" type="text/css" media="all" charset="utf-8">
+    <link rel="stylesheet" href="/modules/highlight/styles/github-gist.css" type="text/css" media="all" charset="utf-8">
     <link rel="stylesheet" href="/modules/codemirror/lib/codemirror.css" type="text/css" media="all" charset="utf-8">
     <link rel="stylesheet" href="/ss/style.css" type="text/css" media="all" charset="utf-8">
 
@@ -48,7 +48,7 @@
       <div id="main" class="row">
         <div class="col-xs-12 col-md-6 col-lg-6 fill">
           <div id="editorwrap" class="fill">
-            <textarea id="editor" class="fill"># Test</textarea>
+            <textarea id="editor" class="fill"><%= initialData %></textarea>
           </div>
         </div>
         <div class="col-xs-12 col-md-6 col-lg-6 fill">
@@ -60,13 +60,13 @@
 
 
     <script src="/modules/jquery/dist/jquery.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/modules/bootstrap/dist/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/modules/bootstrap/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="/modules/codemirror/lib/codemirror.js" type="text/javascript" charset="utf-8"></script>
     <script src="/modules/codemirror/addon/selection/active-line.js" type="text/javascript" charset="utf-8"></script>
     <script src="/modules/codemirror/addon/mode/loadmode.js" type="text/javascript" charset="utf-8"></script>
     <script src="/modules/codemirror/addon/mode/simple.js" type="text/javascript" charset="utf-8"></script>
     <script src="/modules/codemirror/addon/mode/overlay.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/modules/highlightjs/highlight.pack.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/modules/highlight" type="text/javascript" charset="utf-8"></script>
     <script src="/modules/marked/marked.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/editor.js" type="text/javascript" charset="utf-8"></script>
 

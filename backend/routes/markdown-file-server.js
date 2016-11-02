@@ -28,7 +28,8 @@ router.get('/edit', function(req, res) {
   fs.readdirSync(path.join(__dirname, '../', 'node_modules/codemirror/mode')).forEach(function(file) {
     modes.push(file);
   });
-  res.render('markdown/edit', { themes : themes, keymaps : keymaps, modes : modes });
+  var initialData = fs.readFileSync(path.join(pageRootAbsolute, 'markdown_syntax.md'));
+  res.render('markdown/edit', { themes : themes, keymaps : keymaps, modes : modes, initialData : initialData });
 });
 
 router.get('/', function (req, res) {
