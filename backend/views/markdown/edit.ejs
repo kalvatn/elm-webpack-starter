@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en" class="fill">
+  <head>
+    <meta charset="UTF-8">
+    <title>Markdown Editor</title>
+
+    <link rel="stylesheet" href="/modules/bootstrap/css/bootstrap.min.css" type="text/css" media="all" charset="utf-8">
+    <link rel="stylesheet" href="/modules/highlight/styles/github.css" type="text/css" media="all" charset="utf-8">
+    <link rel="stylesheet" href="/modules/highlight/styles/github-gist.css" type="text/css" media="all" charset="utf-8">
+    <link rel="stylesheet" href="/modules/codemirror/lib/codemirror.css" type="text/css" media="all" charset="utf-8">
+    <link rel="stylesheet" href="/ss/style.css" type="text/css" media="all" charset="utf-8">
+
+    <!-- dynamic theme css, modified by /js/editor.js -->
+    <link id="codemirror-theme" rel="stylesheet" href="/modules/codemirror/lib/codemirror.css" type="text/css" media="all" charset="utf-8">
+  </head>
+  <body class="fill">
+    <div class="container-fluid fill">
+      <div id="options" class="row">
+        <div class="col-xs-12">
+          <form class="form-inline">
+            <div class="form-group">
+              <label for="select-keymap">keymap</label>
+              <select id="select-keymap" class="form-control" name="option-keymap">
+                <option value="default" class="active" selected="selected">default</option>
+                <% keymaps.forEach(function(value) { %><option value="<%= value %>"><%= value %></option>
+                <% }); %>
+              </select>
+
+              <label for="select-theme">theme</label>
+              <select id="select-theme" class="form-control" name="option-theme">
+                <option value="default" class="active" selected="selected">default</option>
+                <% themes.forEach(function(value) { %><option value="<%= value %>"><%= value %></option>
+                <% }); %>
+              </select>
+
+              <label for="select-mode">mode</label>
+              <select id="select-mode" class="form-control" name="option-mode">
+                <% modes.forEach(function(value) { %><option value="<%= value %>"><%= value %></option>
+                <% }); %>
+              </select>
+              <button id="save-button">Save</button>
+            </div>
+          </form>
+          <hr />
+        </div>
+      </div>
+
+      <div id="main" class="row">
+        <div class="col-xs-12 col-md-6 col-lg-6 fill">
+          <div id="editorwrap" class="fill">
+            <textarea id="editor" class="fill"><%= initialData %></textarea>
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-6 col-lg-6 fill">
+          <div id="preview" class="fill"> </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <script src="/modules/jquery/dist/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/modules/bootstrap/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/modules/codemirror/lib/codemirror.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/modules/codemirror/addon/selection/active-line.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/modules/codemirror/addon/mode/loadmode.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/modules/codemirror/addon/mode/simple.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/modules/codemirror/addon/mode/overlay.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/modules/highlight" type="text/javascript" charset="utf-8"></script>
+    <script src="/modules/marked/marked.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/js/editor.js" type="text/javascript" charset="utf-8"></script>
+
+  </body>
+</html>
+
+
+
