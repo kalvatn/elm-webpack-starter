@@ -141,6 +141,7 @@ $(document).ready(function () {
   setupCodeMirror();
   updatePreview();
 
+
   $('#select-keymap').change(codeMirrorKeymapChange);
   $('#select-theme').change(codeMirrorThemeChange);
   $('#select-mode').change(codeMirrorModeChange);
@@ -161,14 +162,8 @@ $(document).ready(function () {
   $('#preview').addClass('scrollsync');
   scrollSync($('.scrollsync').toArray());
 
-  // var sync = function(e){
-  //   var otherDiv = syncScrollDivs.not(this).off('scroll'), other = otherDiv.get(0);
-  //   var percentage = this.scrollTop / (this.scrollHeight - this.offsetHeight);
-  //   other.scrollTop = percentage * (other.scrollHeight - other.offsetHeight);
-  //   // Firefox workaround. Rebinding without delay isn't enough.
-  //   setTimeout( function(){ otherDiv.on('scroll', sync ); }, 300);
-  // }
-  // syncScrollDivs.on('scroll', sync);
+  $('#loading').addClass('hide');
+  $('#main').removeClass('hide');
 });
 
 
