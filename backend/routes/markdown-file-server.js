@@ -15,13 +15,20 @@ function isMarkdownFile(filename) {
 
 router.get('/edit', function(req, res) {
   var themes = [];
-  var files = fs.readdirSync(path.join(__dirname, '../', 'node_modules/codemirror/theme'));
-  files.forEach(function(file) {
+  var keymaps = [];
+  var modes = [];
+  fs.readdirSync(path.join(__dirname, '../', 'node_modules/codemirror/theme')).forEach(function(file) {
     themes.push(file.replace(path.extname(file), ''));
   });
 
-  console.log(themes);
-  res.render('markdown/edit', { themes : themes });
+  fs.readdirSync(path.join(__dirname, '../', 'node_modules/codemirror/keymap')).forEach(function(file) {
+    keymaps.push(file.replace(path.extname(file), ''));
+  });
+
+  fs.readdirSync(path.join(__dirname, '../', 'node_modules/codemirror/mode')).forEach(function(file) {
+    modes.push(file);
+  });
+  res.render('markdown/edit', { themes : themes, keymaps : keymaps, modes : modes });
 });
 
 router.get('/', function (req, res) {
