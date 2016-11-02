@@ -122,7 +122,17 @@ $(document).ready(function () {
   $('#select-keymap').change(codeMirrorKeymapChange);
   $('#select-theme').change(codeMirrorThemeChange);
   $('#select-mode').change(codeMirrorModeChange);
+
   $('#save-button').on('click', saveFile);
+
+  $('#select-keymap').val('vim');
+  $('#select-theme').val('dracula');
+  $('#select-mode').val('gfm');
+
+  $('#select-keymap, #select-theme, #select-mode').toArray().forEach(function(element) {
+    $(element).trigger('change');
+  });
+
 
 
   $('.CodeMirror-scroll').addClass('scrollsync');
