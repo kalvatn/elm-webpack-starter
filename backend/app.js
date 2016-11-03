@@ -24,6 +24,7 @@ app.use('/modules/bootstrap', express.static(path.join(__dirname, 'node_modules/
 app.use('/modules/marked', express.static(path.join(__dirname, 'node_modules/marked/')));
 app.use('/modules/codemirror', express.static(path.join(__dirname, 'node_modules/codemirror/')));
 app.use('/modules/jquery', express.static(path.join(__dirname, 'node_modules/jquery/')));
+app.use('/modules/fontawesome', express.static(path.join(__dirname, 'node_modules/font-awesome/')));
 
 
 app.use('/', routes);
