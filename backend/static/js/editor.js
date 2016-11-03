@@ -71,8 +71,6 @@ defaults[STORAGE_KEY_EDITOR_MODE] = 'gfm';
 defaults[STORAGE_KEY_EDITOR_CONTENTS] = '';
 defaults[STORAGE_KEY_HIGHLIGHT_THEME] = 'default';
 
-console.log(defaults);
-
 function loadSetting(key) {
   var setting = defaults[key];
   if (storageAvailable('localStorage')) {
@@ -154,6 +152,7 @@ function updatePreview() {
   var source = editor.getValue();
 
   if (!source) {
+    preview.innerHTML = '';
     return;
   }
 
@@ -247,7 +246,6 @@ function loadScript(url, callback) {
 $(document).ready(function () {
   preview = document.getElementById('preview');
   setupCodeMirror();
-  updatePreview();
 
 
 
@@ -277,6 +275,8 @@ $(document).ready(function () {
 
     setInterval(saveEditorContents, 10000);
   }
+
+  updatePreview();
 });
 
 
