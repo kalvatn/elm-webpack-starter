@@ -179,7 +179,6 @@ function editorKeymapChange() {
       editor.setOption('keyMap', keymapname);
     });
   }
-
   saveSetting(STORAGE_KEY_EDITOR_KEYMAP, keymapname);
 }
 
@@ -243,13 +242,44 @@ function loadScript(url, callback) {
   }
 }
 
+
+function copyToClipboardFF(text) {
+  window.prompt("Copy to clipboard: Ctrl C, Enter", text);
+}
+function copyToClipboard(text) {
+  var success = true;
+  var range = document.createRange();
+  var selection;
+
+  if (window.clipboardData) {
+    // ie
+    window.clipboardData.setData("Text", input.val());
+  } else {
+    var dummy = $('<div class="copy-editor-div">');
+    dummy.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+    dummy.text(text);
+    $("body").append(dummy);
+    range.selectNodeContents(dummy.get(0));
+    selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    try {
+      success = document.execCommand("copy", false, null);
+    } catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      dummy.remove();
+    }
+  }
+}
 $(document).ready(function () {
   preview = document.getElementById('preview');
   setupCodeMirror();
-
-
-
-
 
   editorKeymapSelect = $('#select-keymap');
   editorThemeSelect = $('#select-theme');
@@ -263,21 +293,32 @@ $(document).ready(function () {
 
   $('#save-button').on('click', saveFile);
 
-
-
   scrollSync($('.CodeMirror-scroll, #preview').toArray());
 
   $('#loading').addClass('hide');
   $('#main').removeClass('hide');
-
   if (storageAvailable('localStorage')) {
     loadEditorState();
-
     setInterval(saveEditorContents, 10000);
   }
 
   updatePreview();
+
+  var copyButton = document.getElementById('copy-button');
+  copyButton.addEventListener('click', function() {
+    console.log('copy button clicked');
+    copyToClipboard(editor.getValue());
+  });
+
+  $('#options-form').submit(false);
+
+  document.addEventListener('copy', function(e) {
+    var target = $(e.target);
+    if (target.hasClass('copy-editor-div')) {
+      e.clipboardData.setData('text/plain', editor.getValue());
+      e.preventDefault();
+      console.log('copied editor contents to clipboard');
+    }
+  });
 });
-
-
 

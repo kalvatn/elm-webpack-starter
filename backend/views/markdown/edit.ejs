@@ -1,11 +1,14 @@
 <!doctype html>
 <html lang="en" class="fill">
   <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Markdown Editor</title>
 
     <link rel="stylesheet" href="/modules/bootstrap/css/bootstrap.min.css" type="text/css" media="all" charset="utf-8">
     <link rel="stylesheet" href="/modules/codemirror/lib/codemirror.css" type="text/css" media="all" charset="utf-8">
+    <link rel="stylesheet" href="/modules/fontawesome/css/font-awesome.min.css" type="text/css" media="all" charset="utf-8">
 
     <!-- dynamic theme css, modified by /js/editor.js -->
     <link id="codemirror-theme" rel="stylesheet" href="/ss/codemirror-empty-theme.css" type="text/css" media="all" charset="utf-8">
@@ -18,7 +21,7 @@
     <div id="main" class="container-fluid fill hide">
       <div id="options" class="row">
         <div class="col-xs-12">
-          <form class="form-inline">
+          <form id ="options-form" class="form-inline">
             <div class="form-group">
               <label for="select-keymap">keymap</label>
               <select id="select-keymap" class="form-control" name="option-keymap">
@@ -46,6 +49,9 @@
                 <% }); %>
               </select>
               <button id="save-button">Save</button>
+              <button id="copy-button" data-toggle="tooltip" title="copy to clipboard">
+                  <i class="fa fa-clipboard" aria-hidden="true"></i>
+              </button>
             </div>
           </form>
           <hr />
