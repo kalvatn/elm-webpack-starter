@@ -5,8 +5,9 @@
     <title>Markdown Editor</title>
 
     <link rel="stylesheet" href="/modules/bootstrap/css/bootstrap.min.css" type="text/css" media="all" charset="utf-8">
-    <link rel="stylesheet" href="/modules/highlight/styles/github.css" type="text/css" media="all" charset="utf-8">
-    <link rel="stylesheet" href="/modules/highlight/styles/github-gist.css" type="text/css" media="all" charset="utf-8">
+    <!-- <link rel="stylesheet" href="/modules/highlight/styles/default.css" type="text/css" media="all" charset="utf-8"> -->
+    <link rel="stylesheet" href="/modules/highlight/styles/dracula.css" type="text/css" media="all" charset="utf-8">
+    <!-- <link rel="stylesheet" href="/modules/highlight/styles/github-gist.css" type="text/css" media="all" charset="utf-8"> -->
     <link rel="stylesheet" href="/modules/codemirror/lib/codemirror.css" type="text/css" media="all" charset="utf-8">
     <link rel="stylesheet" href="/ss/style.css" type="text/css" media="all" charset="utf-8">
 
@@ -48,11 +49,17 @@
 
       <div id="main" class="row">
         <div id="editorwrap" class="col-xs-12 col-md-6 col-lg-6 fill">
-          <textarea id="editor" class="fill"><%= initialData %></textarea>
+          <!-- <textarea id="editor" class="fill"><%= initialData %></textarea> -->
+          <textarea id="editor" class="fill">```javascript
+  console.log("lol");
+```
+          </textarea>
         </div>
         <div id="previewwrap" class="col-xs-12 col-md-6 col-lg-6 fill">
           <div id="preview"> </div>
+          <textarea id="previewhtml"></textarea>
         </div>
+
       </div>
     </div>
 
@@ -65,7 +72,8 @@
     <script src="/modules/codemirror/addon/mode/loadmode.js" type="text/javascript" charset="utf-8"></script>
     <script src="/modules/codemirror/addon/mode/simple.js" type="text/javascript" charset="utf-8"></script>
     <script src="/modules/codemirror/addon/mode/overlay.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/modules/highlight" type="text/javascript" charset="utf-8"></script>
+    <script src="/modules/highlight/lib/highlight.js" type="text/javascript" charset="utf-8"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
     <script src="/modules/marked/marked.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/editor.js" type="text/javascript" charset="utf-8"></script>
 

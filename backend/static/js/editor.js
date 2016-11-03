@@ -7,6 +7,7 @@ var scriptCache = [];
 
 var markedWorker;
 
+var previewhtml;
 
 function setupMarked() {
 
@@ -15,6 +16,7 @@ function setupMarked() {
     markedWorker = new Worker('/js/marked_worker.js');
     markedWorker.onmessage = function(e) {
       preview.innerHTML = e.data;
+      document.getElementById('previewhtml').innerHTML = e.data;
     };
   } else {
     marked.setOptions({
