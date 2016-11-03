@@ -38,11 +38,11 @@ function setupCodeMirror() {
   editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
     lineNumbers: true,
     matchBrackets: true,
-    lineWrapping: true,
+    lineWrapping: false,
+    cursorScrollMargin: 300,
     styleActiveLine: true,
-    indentUnit:2,
+    indentUnit: 2,
     tabSize: 2,
-    viewportMargin: Infinity,
     mode: 'gfm',
     keyMap: 'default',
     theme: 'default'
@@ -76,12 +76,15 @@ function updatePreview() {
 
 function codeMirrorKeymapChange() {
   var keyMapName = this.value;
-  var fileUrl = codemirrorRoot + '/keymap/' + keyMapName + '.js';
-
-  loadScript(fileUrl, function() {
-    console.log('switching keymap to ' + keyMapName);
+  if (keyMapName === "default") {
     editor.setOption('keyMap', keyMapName);
-  });
+  } else {
+    var fileUrl = codemirrorRoot + '/keymap/' + keyMapName + '.js';
+    loadScript(fileUrl, function() {
+      console.log('switching keymap to ' + keyMapName);
+      editor.setOption('keyMap', keyMapName);
+    });
+  }
 }
 
 function codeMirrorThemeChange() {
@@ -148,7 +151,7 @@ $(document).ready(function () {
 
   $('#save-button').on('click', saveFile);
 
-  $('#select-keymap').val('vim');
+  $('#select-keymap').val('default');
   $('#select-theme').val('dracula');
   $('#select-mode').val('gfm');
 
