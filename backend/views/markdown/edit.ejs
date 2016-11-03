@@ -5,14 +5,13 @@
     <title>Markdown Editor</title>
 
     <link rel="stylesheet" href="/modules/bootstrap/css/bootstrap.min.css" type="text/css" media="all" charset="utf-8">
-    <!-- <link rel="stylesheet" href="/modules/highlight/styles/default.css" type="text/css" media="all" charset="utf-8"> -->
-    <link rel="stylesheet" href="/modules/highlight/styles/dracula.css" type="text/css" media="all" charset="utf-8">
-    <!-- <link rel="stylesheet" href="/modules/highlight/styles/github-gist.css" type="text/css" media="all" charset="utf-8"> -->
     <link rel="stylesheet" href="/modules/codemirror/lib/codemirror.css" type="text/css" media="all" charset="utf-8">
-    <link rel="stylesheet" href="/ss/style.css" type="text/css" media="all" charset="utf-8">
 
     <!-- dynamic theme css, modified by /js/editor.js -->
-    <link id="codemirror-theme" rel="stylesheet" href="/modules/codemirror/lib/codemirror.css" type="text/css" media="all" charset="utf-8">
+    <link id="codemirror-theme" rel="stylesheet" href="/ss/codemirror-empty-theme.css" type="text/css" media="all" charset="utf-8">
+    <link id="highlight-theme" rel="stylesheet" href="/modules/highlight/styles/default.css" type="text/css" media="all" charset="utf-8">
+
+    <link rel="stylesheet" href="/ss/style.css" type="text/css" media="all" charset="utf-8">
   </head>
   <body class="fill">
     <div id="loading">loading ...</div>
@@ -40,6 +39,12 @@
                 <% modes.forEach(function(value) { %><option value="<%= value %>"><%= value %></option>
                 <% }); %>
               </select>
+
+              <label for="select-hl-theme">highlight theme</label>
+              <select id="select-hl-theme" class="form-control" name="option-hl-theme">
+                <% hlthemes.forEach(function(value) { %><option value="<%= value %>"><%= value %></option>
+                <% }); %>
+              </select>
               <button id="save-button">Save</button>
             </div>
           </form>
@@ -49,34 +54,24 @@
 
       <div id="main" class="row">
         <div id="editorwrap" class="col-xs-12 col-md-6 col-lg-6 fill">
-          <!-- <textarea id="editor" class="fill"><%= initialData %></textarea> -->
-          <textarea id="editor" class="fill">```javascript
-  console.log("lol");
-```
-          </textarea>
+          <textarea id="editor" class="fill"><%= initialData %></textarea>
         </div>
         <div id="previewwrap" class="col-xs-12 col-md-6 col-lg-6 fill">
           <div id="preview"> </div>
-          <textarea id="previewhtml"></textarea>
         </div>
-
       </div>
     </div>
 
-
-
     <script src="/modules/jquery/dist/jquery.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="/modules/bootstrap/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+
     <script src="/modules/codemirror/lib/codemirror.js" type="text/javascript" charset="utf-8"></script>
     <script src="/modules/codemirror/addon/selection/active-line.js" type="text/javascript" charset="utf-8"></script>
     <script src="/modules/codemirror/addon/mode/loadmode.js" type="text/javascript" charset="utf-8"></script>
     <script src="/modules/codemirror/addon/mode/simple.js" type="text/javascript" charset="utf-8"></script>
     <script src="/modules/codemirror/addon/mode/overlay.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/modules/highlight/lib/highlight.js" type="text/javascript" charset="utf-8"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/modules/marked/marked.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/js/editor.js" type="text/javascript" charset="utf-8"></script>
 
+    <script src="/js/editor.js" type="text/javascript" charset="utf-8"></script>
   </body>
 </html>
 

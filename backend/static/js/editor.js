@@ -1,40 +1,13 @@
 'use strict';
 
-var editor;
-var codemirrorRoot = '/modules/codemirror'
+var codemirrorRoot = '/modules/codemirror';
+var highlightThemeRoot = '/modules/highlight/styles/';
 
 var scriptCache = [];
 
-var markedWorker;
+var editor;
+var preview;
 
-var previewhtml;
-
-function setupMarked() {
-
-  if (typeof(Worker) !== "undefined") {
-    console.log('workers supported, creating marked_worker.js');
-    markedWorker = new Worker('/js/marked_worker.js');
-    markedWorker.onmessage = function(e) {
-      preview.innerHTML = e.data;
-      document.getElementById('previewhtml').innerHTML = e.data;
-    };
-  } else {
-    marked.setOptions({
-      renderer: new marked.Renderer(),
-      gfm: true,
-      tables: true,
-      breaks: false,
-      pedantic: false,
-      sanitize: false,
-      smartLists: true,
-      smartypants: false,
-      highlight: function(code) {
-        return hljs.highlightAuto(code).value;
-      }
-    });
-  }
-
-}
 
 function setupCodeMirror() {
   editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
@@ -52,7 +25,6 @@ function setupCodeMirror() {
 
   CodeMirror.modeURL = codemirrorRoot + '/mode/%N/%N.js';
 
-  var preview = document.getElementById('preview');
   var delay;
   editor.on('change', function() {
     clearTimeout(delay);
@@ -63,17 +35,23 @@ function setupCodeMirror() {
 
 
 function updatePreview() {
-
-  var preview = document.getElementById('preview');
-  var source = editor.getValue();
-  if (markedWorker) {
-    markedWorker.postMessage(source);
-  } else {
-    marked(source, function(err, content) {
-      if (err) throw err;
-      preview.innerHTML = content;
-    });
+  if (!preview || !editor) {
+    return;
   }
+
+  var source = editor.getValue();
+
+  $.ajax({
+    type : 'POST',
+    url : '/markdown/parse',
+    data : { source : source },
+    success: function(data, text) {
+      preview.innerHTML = data;
+    },
+    error : function (req, status, error) {
+      console.log(req.responseText);
+    }
+  });
 }
 
 function codeMirrorKeymapChange() {
@@ -98,6 +76,12 @@ function codeMirrorThemeChange() {
     $('#codemirror-theme').attr('href', '/ss/codemirror-empty-theme.css');
   }
   editor.setOption('theme', themename);
+}
+
+function highlightThemeChange() {
+  var themename = this.value;
+  var file = this.value + '.css';
+  $('#highlight-theme').attr('href', highlightThemeRoot + file);
 }
 
 function codeMirrorModeChange() {
@@ -142,7 +126,7 @@ function loadScript(url, callback) {
 }
 
 $(document).ready(function () {
-  setupMarked();
+  preview = document.getElementById('preview');
   setupCodeMirror();
   updatePreview();
 
@@ -150,6 +134,8 @@ $(document).ready(function () {
   $('#select-keymap').change(codeMirrorKeymapChange);
   $('#select-theme').change(codeMirrorThemeChange);
   $('#select-mode').change(codeMirrorModeChange);
+
+  $('#select-hl-theme').change(highlightThemeChange);
 
   $('#save-button').on('click', saveFile);
 
