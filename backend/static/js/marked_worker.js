@@ -1,6 +1,6 @@
 'use strict';
 
-importScripts('/modules/marked/marked.min.js', '/modules/highlight');
+importScripts('/modules/marked/marked.min.js', '/modules/highlight/lib/highlight.js');
 
 marked.setOptions({
   renderer: new marked.Renderer(),
@@ -12,7 +12,7 @@ marked.setOptions({
   smartLists: true,
   smartypants: false,
   highlight: function(code) {
-    return self.hljs.highlightAuto(code).value;
+    return hljs.highlightAuto(code).value;
   }
 });
 

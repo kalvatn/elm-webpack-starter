@@ -19,8 +19,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'static')));
 
 
-app.use('/modules/highlight', express.static(path.join(__dirname, 'node_modules/highlight.js/lib/highlight.js')));
-app.use('/modules/highlight/styles', express.static(path.join(__dirname, 'node_modules/highlight.js/styles')));
+app.use('/modules/highlight', express.static(path.join(__dirname, 'node_modules/highlight.js/')));
 app.use('/modules/bootstrap', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/')));
 app.use('/modules/marked', express.static(path.join(__dirname, 'node_modules/marked/')));
 app.use('/modules/codemirror', express.static(path.join(__dirname, 'node_modules/codemirror/')));
