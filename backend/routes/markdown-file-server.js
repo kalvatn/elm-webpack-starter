@@ -16,7 +16,10 @@ marked.setOptions({
   sanitize: false,
   smartLists: true,
   smartypants: false,
-  highlight: function(code) {
+  highlight: function(code, lang) {
+    if (lang) {
+      return hljs.highlightAuto(code, [ lang ]).value;
+    }
     return hljs.highlightAuto(code).value;
   }
 });
