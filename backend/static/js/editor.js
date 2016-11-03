@@ -8,6 +8,118 @@ var scriptCache = [];
 var editor;
 var preview;
 
+var editorKeymapSelect;
+var editorThemeSelect;
+var editorModeSelect;
+
+var highlightThemeSelect;
+
+
+function scrollSync(elements) {
+  elements.forEach(function(el) {
+    el.addEventListener('scroll', function() {
+      var scrollX = el.scrollLeft;
+      var scrollY = el.scrollTop;
+
+      var xRate = scrollX / (el.scrollWidth - el.clientWidth);
+      var yRate = scrollY / (el.scrollHeight - el.clientHeight);
+      var updateX = scrollX != el.eX;
+      var updateY = scrollY != el.eY;
+
+      el.eX = scrollX;
+      el.eY = scrollY;
+
+      elements.forEach(function(otherEl) {
+        if (otherEl != el) {
+          if (updateX && Math.round(otherEl.scrollLeft - (scrollX = otherEl.eX = Math.round(xRate * (otherEl.scrollWidth - otherEl.clientWidth))))) {
+            otherEl.scrollLeft = scrollX;
+          }
+          if (updateY && Math.round(otherEl.scrollTop - (scrollY = otherEl.eY = Math.round(yRate * (otherEl.scrollHeight - otherEl.clientHeight))))) {
+            otherEl.scrollTop = scrollY;
+          }
+        }
+      });
+    });
+  });
+}
+
+function storageAvailable(type) {
+  try {
+    var storage = window[type],
+    x = '__storage_test__';
+    storage.setItem(x, x);
+    storage.removeItem(x);
+    return true;
+  }
+  catch(e) {
+    return false;
+  }
+}
+
+const STORAGE_KEY_EDITOR_KEYMAP = "editor.keymap";
+const STORAGE_KEY_EDITOR_THEME = "editor.theme";
+const STORAGE_KEY_EDITOR_MODE = "editor.mode";
+const STORAGE_KEY_EDITOR_CONTENTS = "editor.contents";
+
+const STORAGE_KEY_HIGHLIGHT_THEME = "highlight.theme";
+
+var defaults = {};
+
+defaults[STORAGE_KEY_EDITOR_KEYMAP] = 'default';
+defaults[STORAGE_KEY_EDITOR_THEME] = 'default';
+defaults[STORAGE_KEY_EDITOR_MODE] = 'gfm';
+defaults[STORAGE_KEY_EDITOR_CONTENTS] = '';
+defaults[STORAGE_KEY_HIGHLIGHT_THEME] = 'default';
+
+console.log(defaults);
+
+function loadSetting(key) {
+  var setting = defaults[key];
+  if (storageAvailable('localStorage')) {
+    if (localStorage.getItem(key)) {
+      setting = localStorage.getItem(key);
+      console.log('loaded stored setting ' + key);
+    }
+  }
+  return setting;
+}
+
+function saveSetting(key, value) {
+  if (storageAvailable('localStorage')) {
+    var fallback = defaults[key];
+    if (fallback == null) {
+      console.log('bad key ' + key + ' no defaults');
+      return;
+    }
+    if (!value) {
+      value = fallback;
+    }
+    localStorage.setItem(key, value);
+  }
+}
+
+function loadEditorState() {
+  editorKeymapSelect.val(loadSetting(STORAGE_KEY_EDITOR_KEYMAP));
+  editorThemeSelect.val(loadSetting(STORAGE_KEY_EDITOR_THEME));
+  editorModeSelect.val(loadSetting(STORAGE_KEY_EDITOR_MODE));
+  highlightThemeSelect.val(loadSetting(STORAGE_KEY_HIGHLIGHT_THEME));
+
+  var contents = loadSetting(STORAGE_KEY_EDITOR_CONTENTS);
+  if (contents !== '') {
+    editor.setValue(contents);
+  }
+
+  [ editorKeymapSelect, editorThemeSelect, editorModeSelect, highlightThemeSelect ].forEach(function(element) {
+    element.trigger('change');
+  });
+}
+
+function saveEditorContents() {
+  if (storageAvailable('localStorage')) {
+    saveSetting(STORAGE_KEY_EDITOR_CONTENTS, editor.getValue());
+  }
+}
+
 
 function setupCodeMirror() {
   editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
@@ -41,6 +153,10 @@ function updatePreview() {
 
   var source = editor.getValue();
 
+  if (!source) {
+    return;
+  }
+
   $.ajax({
     type : 'POST',
     url : '/markdown/parse',
@@ -54,20 +170,21 @@ function updatePreview() {
   });
 }
 
-function codeMirrorKeymapChange() {
-  var keyMapName = this.value;
-  if (keyMapName === "default") {
-    editor.setOption('keyMap', keyMapName);
+function editorKeymapChange() {
+  var keymapname = this.value;
+  if (keymapname === "default") {
+    editor.setOption('keyMap', keymapname);
   } else {
-    var fileUrl = codemirrorRoot + '/keymap/' + keyMapName + '.js';
+    var fileUrl = codemirrorRoot + '/keymap/' + keymapname + '.js';
     loadScript(fileUrl, function() {
-      console.log('switching keymap to ' + keyMapName);
-      editor.setOption('keyMap', keyMapName);
+      editor.setOption('keyMap', keymapname);
     });
   }
+
+  saveSetting(STORAGE_KEY_EDITOR_KEYMAP, keymapname);
 }
 
-function codeMirrorThemeChange() {
+function editorThemeChange() {
   var themename = this.value;
   var file = this.value + '.css';
   if (themename !== "default") {
@@ -76,19 +193,21 @@ function codeMirrorThemeChange() {
     $('#codemirror-theme').attr('href', '/ss/codemirror-empty-theme.css');
   }
   editor.setOption('theme', themename);
+  saveSetting(STORAGE_KEY_EDITOR_THEME, themename);
 }
 
 function highlightThemeChange() {
   var themename = this.value;
   var file = this.value + '.css';
   $('#highlight-theme').attr('href', highlightThemeRoot + file);
+  saveSetting(STORAGE_KEY_HIGHLIGHT_THEME, themename);
 }
 
-function codeMirrorModeChange() {
+function editorModeChange() {
   var modename = this.value;
   CodeMirror.requireMode(modename, function() {
-    console.log('switching mode to ' + modename);
     editor.setOption('mode', modename);
+    saveSetting(STORAGE_KEY_EDITOR_MODE, modename);
   });
 }
 function saveFile(e) {
@@ -131,58 +250,34 @@ $(document).ready(function () {
   updatePreview();
 
 
-  $('#select-keymap').change(codeMirrorKeymapChange);
-  $('#select-theme').change(codeMirrorThemeChange);
-  $('#select-mode').change(codeMirrorModeChange);
 
-  $('#select-hl-theme').change(highlightThemeChange);
+
+
+  editorKeymapSelect = $('#select-keymap');
+  editorThemeSelect = $('#select-theme');
+  editorModeSelect = $('#select-mode');
+  highlightThemeSelect = $('#select-hl-theme');
+
+  editorKeymapSelect.change(editorKeymapChange);
+  editorThemeSelect.change(editorThemeChange);
+  editorModeSelect.change(editorModeChange);
+  highlightThemeSelect.change(highlightThemeChange);
 
   $('#save-button').on('click', saveFile);
 
-  $('#select-keymap').val('default');
-  $('#select-theme').val('dracula');
-  $('#select-mode').val('gfm');
-
-  $('#select-keymap, #select-theme, #select-mode').toArray().forEach(function(element) {
-    $(element).trigger('change');
-  });
 
 
-
-  $('.CodeMirror-scroll').addClass('scrollsync');
-  $('#preview').addClass('scrollsync');
-  scrollSync($('.scrollsync').toArray());
+  scrollSync($('.CodeMirror-scroll, #preview').toArray());
 
   $('#loading').addClass('hide');
   $('#main').removeClass('hide');
+
+  if (storageAvailable('localStorage')) {
+    loadEditorState();
+
+    setInterval(saveEditorContents, 10000);
+  }
 });
 
 
 
-function scrollSync(elements) {
-  elements.forEach(function(el) {
-    el.addEventListener('scroll', function() {
-      var scrollX = el.scrollLeft;
-      var scrollY = el.scrollTop;
-
-      var xRate = scrollX / (el.scrollWidth - el.clientWidth);
-      var yRate = scrollY / (el.scrollHeight - el.clientHeight);
-      var updateX = scrollX != el.eX;
-      var updateY = scrollY != el.eY;
-
-      el.eX = scrollX;
-      el.eY = scrollY;
-
-      elements.forEach(function(otherEl) {
-        if (otherEl != el) {
-          if (updateX && Math.round(otherEl.scrollLeft - (scrollX = otherEl.eX = Math.round(xRate * (otherEl.scrollWidth - otherEl.clientWidth))))) {
-            otherEl.scrollLeft = scrollX;
-          }
-          if (updateY && Math.round(otherEl.scrollTop - (scrollY = otherEl.eY = Math.round(yRate * (otherEl.scrollHeight - otherEl.clientHeight))))) {
-            otherEl.scrollTop = scrollY;
-          }
-        }
-      });
-    });
-  });
-}
