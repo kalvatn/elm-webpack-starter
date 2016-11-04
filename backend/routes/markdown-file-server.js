@@ -58,7 +58,6 @@ router.get('/edit', function(req, res) {
   });
 
   fs.readdirSync(path.join(__dirname, '../', 'node_modules/highlight.js/styles')).forEach(function(file) {
-
     hlthemes.push(file.replace(path.extname(file), ''));
   });
   var initialData = fs.readFileSync(path.join(pageRootAbsolute, 'markdown_syntax.md'));
@@ -71,8 +70,6 @@ router.get('/', function (req, res) {
   walker.on('file', function(root, stat, next) {
     if (isMarkdownFile(stat.name)) {
       markdownFiles.push(root.replace(pageRootRelative, '') + '/' + stat.name);
-    } else {
-      console.warn('not a valid markdown file : ' + stat.name);
     }
     next();
   });
@@ -85,19 +82,33 @@ router.get('/', function (req, res) {
 
 router.post('/save', function(req, res) {
   var filename = req.body.filename;
-  var content = req.body.content.trim();
-  console.log(content);
-  if (filename.startsWith(pageRootAbsolute)) {
-    fs.writeFile(filename, content, function (err) {
-      if (err) {
-        res.status(500).send('error saving file : ' + err);
-      } else {
-        res.status(200).send('saved');
-      }
-    });
-  } else {
-    res.status(500).send('invalid file path');
+  var content = req.body.content;
+  if (!filename || !content) {
+    throw new Error('missing file and/or content');
   }
+  fs.writeFile(path.join(pageRootAbsolute, filename + '.md'), content.trim(), function (err) {
+    if (err) throw err;
+    res.status(200).send('saved ' + filename);
+  });
+});
+
+router.get(/load\/([a-zA-Z0-9\/]+)/, function(req, res, next) {
+  console.log(req.params);
+  var filename = req.params[0];
+
+  var filepath = path.join(pageRootAbsolute, filename + '.md');
+  console.log(filepath);
+  fs.stat(filepath, function(err, stats) {
+    if (err) {
+      console.log('no such file or directory');
+      res.status(404).send('no such file or directory');
+    } else {
+      fs.readFile(filepath, function(err, data) {
+        if (err) throw err;
+        res.status(200).send(data);
+      });
+    }
+  });
 });
 
 

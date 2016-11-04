@@ -225,6 +225,22 @@ function saveFile(e) {
   });
 }
 
+function loadFile(e) {
+  e.preventDefault();
+  var filename = "folder/file";
+  console.log('/markdown/load/' + filename);
+  $.ajax({
+    type : 'GET',
+    url : '/markdown/load/' + filename,
+    success: function(data, text) {
+      editor.setValue(data);
+    },
+    error : function (req, status, error) {
+      console.log(req.responseText);
+    }
+  });
+}
+
 function loadScript(url, callback) {
   if (scriptCache.indexOf(url) > -1) {
     console.log(url + ' already loaded');
@@ -246,6 +262,7 @@ function loadScript(url, callback) {
 function copyToClipboardFF(text) {
   window.prompt("Copy to clipboard: Ctrl C, Enter", text);
 }
+
 function copyToClipboard(text) {
   var success = true;
   var range = document.createRange();
@@ -277,6 +294,7 @@ function copyToClipboard(text) {
     }
   }
 }
+
 $(document).ready(function () {
   preview = document.getElementById('preview');
   setupCodeMirror();
@@ -292,6 +310,7 @@ $(document).ready(function () {
   highlightThemeSelect.change(highlightThemeChange);
 
   $('#save-button').on('click', saveFile);
+  $('#load-button').on('click', loadFile);
 
   scrollSync($('.CodeMirror-scroll, #preview').toArray());
 
