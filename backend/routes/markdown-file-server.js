@@ -7,6 +7,12 @@ var fs = require('fs');
 
 var hljs = require('highlight.js');
 var marked = require('marked');
+
+
+
+var FileManager = require('../filemanager.js');
+
+
 marked.setOptions({
   renderer: new marked.Renderer(),
   gfm: true,
@@ -60,11 +66,11 @@ router.get('/edit', function(req, res) {
   fs.readdirSync(path.join(__dirname, '../', 'node_modules/highlight.js/styles')).forEach(function(file) {
     hlthemes.push(file.replace(path.extname(file), ''));
   });
-  var initialData = fs.readFileSync(path.join(pageRootAbsolute, 'markdown_syntax.md'));
+  var initialData = fs.readFileSync(path.join(pageRootAbsolute, 'markdown-syntax.md'));
   res.render('markdown/edit', { themes : themes, keymaps : keymaps, modes : modes, hlthemes : hlthemes, initialData : initialData });
 });
 
-router.get('/', function (req, res) {
+router.get('/list/', function (req, res) {
   var markdownFiles = [];
   var walker = walk.walk(pageRootRelative, { followLinks: false });
   walker.on('file', function(root, stat, next) {
@@ -80,6 +86,16 @@ router.get('/', function (req, res) {
 
 });
 
+router.get(/ls\/(.*)/, function(req, res) {
+  var folder = req.params[0];
+  res.send(FileManager.list(pageRootAbsolute, folder));
+});
+
+router.get(/tree(.*)/, function(req, res) {
+  var folder = req.params[0];
+  res.send(FileManager.tree(pageRootAbsolute, folder));
+});
+
 router.post('/save', function(req, res) {
   var filename = req.body.filename;
   var content = req.body.content;
@@ -92,7 +108,7 @@ router.post('/save', function(req, res) {
   });
 });
 
-router.get(/load\/([a-zA-Z0-9\/]+)/, function(req, res, next) {
+router.get(/load\/([\.\-a-zA-Z0-9\/]+)/, function(req, res, next) {
   console.log(req.params);
   var filename = req.params[0];
 
