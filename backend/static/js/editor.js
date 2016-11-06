@@ -236,6 +236,7 @@ function loadFile(filename) {
     console.warn('missing filename');
     return;
   }
+  filenameInput.val(filename);
   console.log('/markdown/load/' + filename);
   $.ajax({
     type : 'GET',
@@ -311,6 +312,12 @@ function tree() {
       var html = createFileList(data);
       console.log(html);
       fileList.replaceWith(html);
+
+      $('.filelist_item').on('click', function(e) {
+        var href = this.href;
+        var relativePath = href.substring(href.indexOf('#') + 1);
+        loadFile(relativePath);
+      });
     },
     error : function (req, status, error) {
       console.log(req.responseText);
@@ -322,18 +329,14 @@ function createFileList(json) {
   var html;
   html = '<ul id="filelist" class="dropdown-menu">';
 
-  json.files.forEach(function(file) {
-    console.log(file);
-    if (!file.name) {
-      file.name = '/';
-    }
-    if (file.isDirectory) {
+  json.children.forEach(function(file) {
+    if (file.children) {
       html += '<li class="dropdown-submenu">';
-      html += '<a href="#">' + file.name + '</a>';
+      html += '<a href="#' + file.path +'">' + file.name + '</a>';
       html += createFileList(file);
       html += '</li>'
     } else {
-      html += '<li><a href="#">' + file.name + '</a></li>';
+      html += '<li><a class="filelist_item" href="#' + file.path + '">' + file.name + '</a></li>';
     }
   });
 
@@ -345,6 +348,9 @@ var fileList;
 
 $(document).ready(function () {
   fileList = $("#filelist");
+  fileList.on('change', function(e) {
+    console.log('filelist change');
+  });
   tree();
   preview = document.getElementById('preview');
   setupCodeMirror();

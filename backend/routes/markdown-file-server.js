@@ -102,17 +102,24 @@ router.post('/save', function(req, res) {
   if (!filename || !content) {
     throw new Error('missing file and/or content');
   }
-  fs.writeFile(path.join(pageRootAbsolute, filename + '.md'), content.trim(), function (err) {
+  if (!filename.endsWith('.md')) {
+    filename = filename + '.md';
+  }
+  fs.writeFile(path.join(pageRootAbsolute, filename), content.trim(), function (err) {
     if (err) throw err;
     res.status(200).send('saved ' + filename);
   });
 });
 
-router.get(/load\/([\.\-a-zA-Z0-9\/]+)/, function(req, res, next) {
+router.get(/load(.*)/, function(req, res, next) {
   console.log(req.params);
   var filename = req.params[0];
 
-  var filepath = path.join(pageRootAbsolute, filename + '.md');
+  if (!filename.endsWith('.md')) {
+    filename = filename + '.md';
+  }
+
+  var filepath = path.join(pageRootAbsolute, filename);
   console.log(filepath);
   fs.stat(filepath, function(err, stats) {
     if (err) {

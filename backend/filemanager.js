@@ -30,26 +30,31 @@ FileManager.list = function(root, directory) {
   return files;
 };
 
-FileManager.tree = function(root, directory) {
-  if (!directory) {
-    directory = '';
-  }
-  var info = FileManager.info(root, directory);
-  if (info.error) {
-    return {};
-  }
-  var tree = FileManager.info(root, directory);
+FileManager.tree = function(root, relativeRoot) {
+  var item = {};
+  item.path = relativeRoot;
+  item.name = path.basename(relativeRoot);
 
-  tree.files = [];
-  var absolutePath = path.join(root, directory);
-  FileManager.list(root, directory).forEach(function(file) {
-    if (file.isDirectory) {
-      tree.files.push(FileManager.tree(path.join(root, directory), file.name));
-    } else {
-      tree.files.push(file);
-    }
-  });
-  return tree;
+  var stats;
+
+  try {
+    stats = fs.statSync(root);
+  } catch (e) {
+    return null;
+  }
+
+  if (stats.isFile()) {
+    item.size = stats.size;
+  } else if (stats.isDirectory()) {
+    item.children = fs.readdirSync(root)
+      .map(file => FileManager.tree(path.join(root, file), path.join(relativeRoot, file)))
+      .filter(e => !!e);
+  } else {
+    return null;
+  }
+
+  return item;
+
 };
 
 FileManager.mkdir = function(directory) {
