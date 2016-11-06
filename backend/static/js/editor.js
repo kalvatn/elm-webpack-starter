@@ -14,6 +14,11 @@ var editorModeSelect;
 
 var highlightThemeSelect;
 
+var copyButton;
+var loadButton;
+var saveButton;
+var filenameInput;
+
 
 function scrollSync(elements) {
   elements.forEach(function(el) {
@@ -208,16 +213,36 @@ function editorModeChange() {
     saveSetting(STORAGE_KEY_EDITOR_MODE, modename);
   });
 }
-function saveFile(e) {
-  e.preventDefault();
-  var content = editor.getValue();
-  var filename = "editor";
+function saveFile(filename, content) {
+  if (!filename || !content) {
+    console.warn('missing filename and/or contents');
+    return;
+  }
   $.ajax({
     type : 'POST',
     url : '/markdown/save',
     data : { filename : filename, content : content },
     success: function(data, text) {
       console.log('saved success');
+    },
+    error : function (req, status, error) {
+      console.log(req.responseText);
+    }
+  });
+}
+
+function loadFile(filename) {
+  if (!filename) {
+    console.warn('missing filename');
+    return;
+  }
+  filenameInput.val(filename);
+  console.log('/markdown/load/' + filename);
+  $.ajax({
+    type : 'GET',
+    url : '/markdown/load/' + filename,
+    success: function(data, text) {
+      editor.setValue(data);
     },
     error : function (req, status, error) {
       console.log(req.responseText);
@@ -246,6 +271,7 @@ function loadScript(url, callback) {
 function copyToClipboardFF(text) {
   window.prompt("Copy to clipboard: Ctrl C, Enter", text);
 }
+
 function copyToClipboard(text) {
   var success = true;
   var range = document.createRange();
@@ -277,7 +303,55 @@ function copyToClipboard(text) {
     }
   }
 }
+
+function tree() {
+  $.ajax({
+    type : 'GET',
+    url : '/markdown/tree',
+    success: function(data, text) {
+      var html = createFileList(data);
+      console.log(html);
+      fileList.replaceWith(html);
+
+      $('.filelist_item').on('click', function(e) {
+        var href = this.href;
+        var relativePath = href.substring(href.indexOf('#') + 1);
+        loadFile(relativePath);
+      });
+    },
+    error : function (req, status, error) {
+      console.log(req.responseText);
+    }
+  });
+}
+function createFileList(json) {
+
+  var html;
+  html = '<ul id="filelist" class="dropdown-menu">';
+
+  json.children.forEach(function(file) {
+    if (file.children) {
+      html += '<li class="dropdown-submenu">';
+      html += '<a href="#' + file.path +'">' + file.name + '</a>';
+      html += createFileList(file);
+      html += '</li>'
+    } else {
+      html += '<li><a class="filelist_item" href="#' + file.path + '">' + file.name + '</a></li>';
+    }
+  });
+
+  html += '</ul>';
+  return html;
+}
+
+var fileList;
+
 $(document).ready(function () {
+  fileList = $("#filelist");
+  fileList.on('change', function(e) {
+    console.log('filelist change');
+  });
+  tree();
   preview = document.getElementById('preview');
   setupCodeMirror();
 
@@ -291,26 +365,48 @@ $(document).ready(function () {
   editorModeSelect.change(editorModeChange);
   highlightThemeSelect.change(highlightThemeChange);
 
-  $('#save-button').on('click', saveFile);
+
+  filenameInput = $('#filename-input');
+
+  saveButton = $('#save-button');
+  saveButton.on('click', function(e) {
+    e.preventDefault();
+    var content = editor.getValue();
+    var filename = filenameInput.val();
+
+    saveFile(filename, content);
+  });
+
+
+  loadButton = $('#load-button');
+  // loadButton.on('click', function(e) {
+  //   e.preventDefault();
+  //   var filename = filenameInput.val();
+  //   loadFile(filename);
+  // });
+
 
   scrollSync($('.CodeMirror-scroll, #preview').toArray());
 
-  $('#loading').addClass('hide');
-  $('#main').removeClass('hide');
   if (storageAvailable('localStorage')) {
     loadEditorState();
     setInterval(saveEditorContents, 10000);
   }
 
-  updatePreview();
 
-  var copyButton = document.getElementById('copy-button');
-  copyButton.addEventListener('click', function() {
-    console.log('copy button clicked');
+  copyButton = $('#copy-button');
+  copyButton.on('click', function() {
     copyToClipboard(editor.getValue());
   });
 
-  $('#options-form').submit(false);
+  var optionsForm = $('#options-form');
+  optionsForm.submit(false);
+  optionsForm.bind('keypress', function(e) {
+    if (e.keyCode == 13) {
+      console.log('enter pressed');
+      return false;
+    }
+  });
 
   document.addEventListener('copy', function(e) {
     var target = $(e.target);
@@ -320,5 +416,10 @@ $(document).ready(function () {
       console.log('copied editor contents to clipboard');
     }
   });
+
+  updatePreview();
+
+  $('#loading').addClass('hide');
+  $('#main').removeClass('hide');
 });
 

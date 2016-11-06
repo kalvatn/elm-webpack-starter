@@ -7,6 +7,12 @@ var fs = require('fs');
 
 var hljs = require('highlight.js');
 var marked = require('marked');
+
+
+
+var FileManager = require('../filemanager.js');
+
+
 marked.setOptions({
   renderer: new marked.Renderer(),
   gfm: true,
@@ -58,21 +64,18 @@ router.get('/edit', function(req, res) {
   });
 
   fs.readdirSync(path.join(__dirname, '../', 'node_modules/highlight.js/styles')).forEach(function(file) {
-
     hlthemes.push(file.replace(path.extname(file), ''));
   });
-  var initialData = fs.readFileSync(path.join(pageRootAbsolute, 'markdown_syntax.md'));
+  var initialData = fs.readFileSync(path.join(pageRootAbsolute, 'markdown-syntax.md'));
   res.render('markdown/edit', { themes : themes, keymaps : keymaps, modes : modes, hlthemes : hlthemes, initialData : initialData });
 });
 
-router.get('/', function (req, res) {
+router.get('/list/', function (req, res) {
   var markdownFiles = [];
   var walker = walk.walk(pageRootRelative, { followLinks: false });
   walker.on('file', function(root, stat, next) {
     if (isMarkdownFile(stat.name)) {
       markdownFiles.push(root.replace(pageRootRelative, '') + '/' + stat.name);
-    } else {
-      console.warn('not a valid markdown file : ' + stat.name);
     }
     next();
   });
@@ -83,21 +86,52 @@ router.get('/', function (req, res) {
 
 });
 
+router.get(/ls\/(.*)/, function(req, res) {
+  var folder = req.params[0];
+  res.send(FileManager.list(pageRootAbsolute, folder));
+});
+
+router.get(/tree(.*)/, function(req, res) {
+  var folder = req.params[0];
+  res.send(FileManager.tree(pageRootAbsolute, folder));
+});
+
 router.post('/save', function(req, res) {
   var filename = req.body.filename;
-  var content = req.body.content.trim();
-  console.log(content);
-  if (filename.startsWith(pageRootAbsolute)) {
-    fs.writeFile(filename, content, function (err) {
-      if (err) {
-        res.status(500).send('error saving file : ' + err);
-      } else {
-        res.status(200).send('saved');
-      }
-    });
-  } else {
-    res.status(500).send('invalid file path');
+  var content = req.body.content;
+  if (!filename || !content) {
+    throw new Error('missing file and/or content');
   }
+  if (!filename.endsWith('.md')) {
+    filename = filename + '.md';
+  }
+  fs.writeFile(path.join(pageRootAbsolute, filename), content.trim(), function (err) {
+    if (err) throw err;
+    res.status(200).send('saved ' + filename);
+  });
+});
+
+router.get(/load(.*)/, function(req, res, next) {
+  console.log(req.params);
+  var filename = req.params[0];
+
+  if (!filename.endsWith('.md')) {
+    filename = filename + '.md';
+  }
+
+  var filepath = path.join(pageRootAbsolute, filename);
+  console.log(filepath);
+  fs.stat(filepath, function(err, stats) {
+    if (err) {
+      console.log('no such file or directory');
+      res.status(404).send('no such file or directory');
+    } else {
+      fs.readFile(filepath, function(err, data) {
+        if (err) throw err;
+        res.status(200).send(data);
+      });
+    }
+  });
 });
 
 
